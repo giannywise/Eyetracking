@@ -57,4 +57,5 @@ for _ in range(1000):
         print("No connection with tracker server")
 
 print(df)
-df.to_csv("test.csv")
+name = input()
+df.to_csv(name +".csv")
