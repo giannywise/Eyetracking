@@ -15,6 +15,7 @@ import datetime
 from datetime import timedelta
 import numpy as np
 import pandas as pd
+import os
 
 # Build tracker client, to establish a communication with the tracker server (an Eyeware application).
 #
@@ -23,20 +24,19 @@ import pandas as pd
 # However, it is possible to set a specific hostname and port, depending on your setup and network.
 # See the TrackerClient API reference for further information.
 tracker = TrackerClient()
-start_time = time.time() #Timer in Sekunden
+start_time = time.time()  # Timer in Sekunden
 
 try:
     del df
 except NameError:
     pass
 
-df = pd.DataFrame({'Gaze X':[], 'Gaze Y':[], 'Timestamp': [] }) #DataFrame
+df = pd.DataFrame({'Gaze X': [], 'Gaze Y': [], 'Timestamp': []})  # DataFrame
 
 # Run forever, until we press ctrl+c
-for _ in range(1000):
+for _ in range(10):
     # Make sure that the connection with the tracker server (Eyeware application) is up and running.
     if tracker.connected:
-
 
         print("  * Gaze on Screen:")
         screen_gaze = tracker.get_screen_gaze_info()
@@ -45,9 +45,10 @@ for _ in range(1000):
         if not screen_gaze_is_lost:
             print("      - Coordinates:       <x=%5.3f px,   y=%5.3f px>" % (screen_gaze.x, screen_gaze.y))
             print("      - Confidence:       ", screen_gaze.confidence)
-            #print("      - Timestamps:       ", screen_gaze.confidence)
+            # print("      - Timestamps:       ", screen_gaze.confidence)
             print("      - Timestamps:          %s     " % (time.time() - start_time))
-            df = df.append({"Gaze X": "%5.3f" % (screen_gaze.x), 'Gaze Y':"%5.3f" % (screen_gaze.y), 'Timestamp': "%s" % (time.time() - start_time)}, ignore_index = True)
+            df = df.append({"Gaze X": "%5.3f" % (screen_gaze.x), 'Gaze Y': "%5.3f" % (screen_gaze.y),
+                            'Timestamp': "%s" % (time.time() - start_time)}, ignore_index=True)
 
         time.sleep(1 / 60)  # We expect tracking data at 60 Hz
     else:
@@ -57,5 +58,14 @@ for _ in range(1000):
         print("No connection with tracker server")
 
 print(df)
-name = input()
-df.to_csv(name +".csv")
+name = input("Name eintragen:")
+
+# Löscht csv Dateien mit denselben Namen
+if os.path.exists(name + ".csv"):
+    os.remove(name + ".csv")
+    print("The file has been deleted successfully")
+else:
+    print("The file does not exist!")
+
+# Export
+df.to_csv("Daten/" + name + ".csv")
