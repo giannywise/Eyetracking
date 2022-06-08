@@ -42,5 +42,3 @@ while True:
         MESSAGE_PERIOD_IN_SECONDS = 2
         time.sleep(MESSAGE_PERIOD_IN_SECONDS - time.monotonic() % MESSAGE_PERIOD_IN_SECONDS)
         print("No connection with tracker server")
-
-test
