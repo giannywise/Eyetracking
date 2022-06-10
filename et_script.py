@@ -66,7 +66,7 @@ try:
                                 'Gaze Y': "%5.3f" % (screen_gaze.y),
                                 "Confidence": screen_gaze.confidence}, ignore_index=True)
 
-            time.sleep(1 / 120)  # We expect tracking data at 120 Hz
+            time.sleep(1 / 60)  # We expect tracking data at 60 Hz
         else:
             # Print a message every MESSAGE_PERIOD_IN_SECONDS seconds
             MESSAGE_PERIOD_IN_SECONDS = 2
@@ -75,6 +75,7 @@ try:
 except KeyboardInterrupt:
     pass
 
+# Print DF zur Kontrolle
 print(df)
 
 # Löscht csv Dateien mit denselben Namen
