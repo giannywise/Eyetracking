@@ -46,7 +46,6 @@ except NameError:
 
 df = pd.DataFrame({'Timestamp': [], 'Gaze X': [], 'Gaze Y': [], "Lost Track": [], "Confidence": []})  # DataFrame
 
-# Run forever, until we press ctrl+c/Strg + F2
 try:
     while time.time() < Timeout:
         # Make sure that the connection with the tracker server (Eyeware application) is up and running.
