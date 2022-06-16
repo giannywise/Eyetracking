@@ -30,13 +30,13 @@ tracker = TrackerClient()
 name = input("Enter Name_Datum:")
 
 # Startet das Video (Vorher Video öffnen)
-startfile("Conjuring2_0.mp4")
+startfile("Studie - Eye-Tracking.mp4")
 
 # Timer in Sekunden
 start_time = time.time()
 
 # Timer wie lang das Skript läuft, orientiert an der Videolänge
-Timeout = time.time() + (3.31 * 60)
+Timeout = time.time() + (5.47 * 60)
 
 # Löscht den alten DataFrame, wenn vorhanden
 try:
@@ -62,7 +62,7 @@ try:
                 print("      - Confidence:       ", screen_gaze.confidence)
                 print("      - Timestamps:          %s     " % (time.time() - start_time))
                 df = df.append({'Timestamp': "%s" % (time.time() - start_time), "Gaze X": "%5.3f" % (screen_gaze.x),
-                                'Gaze Y': "%5.3f" % (screen_gaze.y),
+                                'Gaze Y': "%5.3f" % (screen_gaze),
                                 "Confidence": screen_gaze.confidence}, ignore_index=True)
 
             time.sleep(1 / 60)  # We expect tracking data at 60 Hz
