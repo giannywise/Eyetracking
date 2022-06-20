@@ -14,21 +14,26 @@ def fix(df):
     f = 1
     for i in range(len(df)):
         try:
+            p = i - 1
             j = i + 1
             k = j + 1
-            if np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[j]['Gaze X']) ** 2) <= 40 and np.sqrt(
-                    (df.iloc[i]['Gaze Y'] - df.iloc[j]['Gaze Y']) ** 2) <= 40:
+            d = 30  # absoluter Abstand
+            if (np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[j]['Gaze X']) ** 2) <= d\
+                    and np.sqrt((df.iloc[i]['Gaze Y'] - df.iloc[j]['Gaze Y']) ** 2) <= d)\
+                    or (np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[p]['Gaze X']) ** 2) <= d\
+                    and np.sqrt((df.iloc[i]['Gaze Y'] - df.iloc[p]['Gaze Y']) ** 2) <= d):
                 df_fix = df_fix.append({'Fixation': f}, ignore_index=True).astype(int)
             else:
                 df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
-                if np.sqrt((df.iloc[j]['Gaze X'] - df.iloc[k]['Gaze X']) ** 2) <= 40 and np.sqrt(
-                        (df.iloc[j]['Gaze Y'] - df.iloc[k]['Gaze Y']) ** 2) <= 40:
+                if np.sqrt((df.iloc[j]['Gaze X'] - df.iloc[k]['Gaze X']) ** 2) <= d and np.sqrt(
+                        (df.iloc[j]['Gaze Y'] - df.iloc[k]['Gaze Y']) ** 2) <= d:
                     f += 1
                 else:
                     pass
         except IndexError:
-            df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
-    df_fix = df_fix.shift(periods=1, axis=0, fill_value= 1)
+            #df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
+            pass
+    #df_fix = df_fix.shift(periods=1, axis=0, fill_value= 1)
     #d = df['Fixation'] = df_fix
     #d['Fixation'] = d['Fixation'].notna().astype(int)
     return df_fix
