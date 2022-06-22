@@ -19,9 +19,7 @@ def fix(df):
             k = j + 1
             d = 30  # absoluter Abstand
             if (np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[j]['Gaze X']) ** 2) <= d\
-                    and np.sqrt((df.iloc[i]['Gaze Y'] - df.iloc[j]['Gaze Y']) ** 2) <= d)\
-                    or (np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[p]['Gaze X']) ** 2) <= d\
-                    and np.sqrt((df.iloc[i]['Gaze Y'] - df.iloc[p]['Gaze Y']) ** 2) <= d):
+                    and np.sqrt((df.iloc[i]['Gaze Y'] - df.iloc[j]['Gaze Y']) ** 2) <= d):
                 df_fix = df_fix.append({'Fixation': f}, ignore_index=True).astype(int)
             else:
                 df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
