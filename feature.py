@@ -37,8 +37,8 @@ def fix(df):
     return df_fix
 
 # Generiert Geschwindigkeiten
-# dx & dy = differenz. d = Abstand, vx & vy = Geschwindigkeit in x & y Richtung [px/s],
-# v = Betrag des Geschwindigkeitsvektor [px/s], a = Richtung, omega = winkelgeschwindigkeit
+# dx & dy = differenz. d = Abstand, vx & vy = Geschwindigkeit in x oder y Richtung [px/s],
+# v = Betrag des Geschwindigkeitsvektor [px/s], a = Richtung
 def ges(df):
     try:
         del df_rad
