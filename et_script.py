@@ -1,9 +1,4 @@
 """
-  Copyright (c) 2021 Eyeware Tech SA http://www.eyeware.tech
-
-  This file provides an example on how to receive head and eye tracking data
-  from Beam SDK.
-
   Dependencies:
   - Python 3.6
   - NumPy
@@ -29,14 +24,14 @@ tracker = TrackerClient()
 # Name und Datum für den späteren Export
 name = input("Enter Name_Datum:")
 
-# Startet das Video (Vorher Video öffnen)
+# Startet das Video
 startfile("Studie - Eye-Tracking.mp4")
 
 # Timer in Sekunden
 start_time = time.time()
 
 # Timer wie lang das Skript läuft, orientiert an der Videolänge
-Timeout = time.time() + (5.47 * 60)
+Timeout = time.time() + (5.47 * 60) #(Vorher Zeit Eintragen!!!!)
 
 # Löscht den alten DataFrame, wenn vorhanden
 try:

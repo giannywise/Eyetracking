@@ -18,23 +18,31 @@ def fix(df):
             j = i + 1
             k = j + 1
             d = 30  # absoluter Abstand
-            if (np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[j]['Gaze X']) ** 2) <= d\
-                    and np.sqrt((df.iloc[i]['Gaze Y'] - df.iloc[j]['Gaze Y']) ** 2) <= d):
-                df_fix = df_fix.append({'Fixation': f}, ignore_index=True).astype(int)
-            else:
-                df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
-                if np.sqrt((df.iloc[j]['Gaze X'] - df.iloc[k]['Gaze X']) ** 2) <= d and np.sqrt(
-                        (df.iloc[j]['Gaze Y'] - df.iloc[k]['Gaze Y']) ** 2) <= d:
-                    f += 1
+            try:
+                if (np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[j]['Gaze X']) ** 2) <= d \
+                        and np.sqrt((df.iloc[i]['Gaze Y'] - df.iloc[j]['Gaze Y']) ** 2) <= d):
+                    df_fix = df_fix.append({'Fixation': f}, ignore_index=True).astype(int)
+                    if np.isnan() == True:
+                        pass
                 else:
-                    pass
+                    df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
+                    if np.sqrt((df.iloc[j]['Gaze X'] - df.iloc[k]['Gaze X']) ** 2) <= d and np.sqrt(
+                            (df.iloc[j]['Gaze Y'] - df.iloc[k]['Gaze Y']) ** 2) <= d:
+                        f += 1
+                        if np.isnan() == True:
+                            pass
+                    else:
+                        pass
+            except ValueError: pass
+
         except IndexError:
-            #df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
+            # df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
             pass
-    #df_fix = df_fix.shift(periods=1, axis=0, fill_value= 1)
-    #d = df['Fixation'] = df_fix
-    #d['Fixation'] = d['Fixation'].notna().astype(int)
+    # df_fix = df_fix.shift(periods=1, axis=0, fill_value= 1)
+    # d = df['Fixation'] = df_fix
+    # d['Fixation'] = d['Fixation'].notna().astype(int)
     return df_fix
+
 
 # Generiert Geschwindigkeiten
 # dx & dy = differenz. d = Abstand, vx & vy = Geschwindigkeit in x oder y Richtung [px/s],
@@ -50,8 +58,12 @@ def ges(df):
         try:
             j = i + 1
             t = df.iloc[j]['Timestamp'] - df.iloc[i]['Timestamp']
-            dx = df.iloc[j]['Gaze X'] - df.iloc[i]['Gaze X']
-            dy = df.iloc[j]['Gaze Y'] - df.iloc[i]['Gaze Y']
+
+            try:dx = df.iloc[j]['Gaze X'] - df.iloc[i]['Gaze X']
+            except ValueError:pass
+            try:dy = df.iloc[j]['Gaze Y'] - df.iloc[i]['Gaze Y']
+            except ValueError: pass
+
             d = np.sqrt(dx ** 2 + dy ** 2)
             v = d / t
             if dx == 0 and dy == 0:
@@ -75,8 +87,8 @@ def ges(df):
             # print(int(vx),int(vy),int(v))
 
             df_rad = df_rad.append(
-                {'dx': int(dx), 'dy': int(dy), 'd': int(d), 'vx': int(vx), 'vy': int(vy), 'v': int(v), 'a': int(a)},
+                {'dx': dx, 'dy': dy, 'd': d, 'vx': vx, 'vy': vy, 'v': v, 'a': a },
                 ignore_index=True)
         except IndexError:
             pass
-    return df_rad
+    return df_rad.astype(int)
