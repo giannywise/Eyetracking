@@ -31,7 +31,7 @@ startfile("Studie - Eye-Tracking.mp4")
 start_time = time.time()
 
 # Timer wie lang das Skript läuft, orientiert an der Videolänge
-Timeout = time.time() + (5.47 * 60) #(Vorher Zeit Eintragen!!!!)
+Timeout = time.time() + (5.47 * 60)
 
 # Löscht den alten DataFrame, wenn vorhanden
 try:

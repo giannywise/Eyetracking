@@ -17,9 +17,11 @@ def fix(df):
             p = i - 1
             j = i + 1
             k = j + 1
-            d = 30  # absoluter Abstand
+            d = 100  # absoluter Abstand
             try:
-                if (np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[j]['Gaze X']) ** 2) <= d \
+                if df.iloc[i]['Lost Track'] == 1:
+                    df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
+                elif (np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[j]['Gaze X']) ** 2) <= d \
                         and np.sqrt((df.iloc[i]['Gaze Y'] - df.iloc[j]['Gaze Y']) ** 2) <= d):
                     df_fix = df_fix.append({'Fixation': f}, ignore_index=True).astype(int)
                     if np.isnan() == True:
@@ -33,12 +35,13 @@ def fix(df):
                             pass
                     else:
                         pass
-            except ValueError: pass
+            except ValueError:
+                pass
 
         except IndexError:
             # df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
             pass
-    # df_fix = df_fix.shift(periods=1, axis=0, fill_value= 1)
+    df_fix = df_fix.shift(periods=1, axis=0, fill_value= 1)
     # d = df['Fixation'] = df_fix
     # d['Fixation'] = d['Fixation'].notna().astype(int)
     return df_fix
@@ -59,10 +62,14 @@ def ges(df):
             j = i + 1
             t = df.iloc[j]['Timestamp'] - df.iloc[i]['Timestamp']
 
-            try:dx = df.iloc[j]['Gaze X'] - df.iloc[i]['Gaze X']
-            except ValueError:pass
-            try:dy = df.iloc[j]['Gaze Y'] - df.iloc[i]['Gaze Y']
-            except ValueError: pass
+            try:
+                dx = df.iloc[j]['Gaze X'] - df.iloc[i]['Gaze X']
+            except ValueError:
+                pass
+            try:
+                dy = df.iloc[j]['Gaze Y'] - df.iloc[i]['Gaze Y']
+            except ValueError:
+                pass
 
             d = np.sqrt(dx ** 2 + dy ** 2)
             v = d / t
@@ -87,8 +94,44 @@ def ges(df):
             # print(int(vx),int(vy),int(v))
 
             df_rad = df_rad.append(
-                {'dx': dx, 'dy': dy, 'd': d, 'vx': vx, 'vy': vy, 'v': v, 'a': a },
+                {'dx': dx, 'dy': dy, 'd': d, 'vx': vx, 'vy': vy, 'v': v, 'a': a},
                 ignore_index=True)
         except IndexError:
             pass
     return df_rad.astype(int)
+
+
+# Generiert Sakkaden
+
+def sac(df):
+    df_sac = pd.DataFrame({'Saccades': []})
+    #f = 0
+    for i in range(len(df)):
+        try:
+            j = i + 1
+            d = 120
+            try:
+                if df.iloc[i]['Fixation'] == 0 and df.iloc[i]['Lost Track'] == 0:
+                    df_sac = df_sac.append({'Saccades': 1}, ignore_index=True).astype(int)
+                    if np.isnan() == True:
+                        pass
+                else:
+                    df_sac = df_sac.append({'Saccades': 0}, ignore_index=True)
+                    if df.iloc[j]['Fixation'] == 0 or (np.sqrt((df.iloc[i]['Gaze X'] - df.iloc[j]['Gaze X']) ** 2) >= d \
+                        and np.sqrt((df.iloc[i]['Gaze Y'] - df.iloc[j]['Gaze Y']) ** 2) >= d):
+                        #f += 1
+                        if np.isnan() == True:
+                            pass
+                    else:
+                        pass
+            except ValueError:
+                pass
+        # Dauer
+
+        except IndexError:
+            # df_fix = df_fix.append({'Fixation': 0}, ignore_index=True).astype(int)
+            pass
+    # df_fix = df_fix.shift(periods=1, axis=0, fill_value= 1)
+    # d = df['Fixation'] = df_fix
+    # d['Fixation'] = d['Fixation'].notna().astype(int)
+    return df_sac['Saccades']
