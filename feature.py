@@ -131,7 +131,7 @@ def sac(df):
     # d['Fixation'] = d['Fixation'].notna().astype(int)
     return df_sac
 
-
+# Generiert gesamt Dauer Lost Tracks
 def lost_t(df):
     df_ltt = pd.DataFrame({'Lost Track Dauer': []})
     for i in range(len(df)):
@@ -146,7 +146,7 @@ def lost_t(df):
             pass
     return df_ltt
 
-
+# Filtert den DataFrame
 def filter(df, s, e):
     df = df[(df['Timestamp'].between(s, e) == True)].reset_index()
     try:
@@ -197,6 +197,7 @@ def filter(df, s, e):
     return df.drop(['level_0'], axis=1)
 
 
+# Generiert die Features
 def pipe(df, s, e):
     """
     df: Dataframe
