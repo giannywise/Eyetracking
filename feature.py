@@ -51,12 +51,7 @@ def fix(df):
 # dx & dy = differenz. d = Abstand, vx & vy = Geschwindigkeit in x oder y Richtung [px/s],
 # v = Betrag des Geschwindigkeitsvektor [px/s], a = Richtung
 def ges(df):
-    try:
-        del df_rad
-    except NameError:
-        pass
     df_rad = pd.DataFrame({'dx': [], 'dy': [], 'd': [], 'vx': [], 'vy': [], 'v': [], 'a': []})
-    # df[] = df[]
     for i in range(len(df)):
         try:
             j = i + 1
@@ -98,18 +93,18 @@ def ges(df):
                 ignore_index=True)
         except IndexError:
             pass
-    return df_rad.astype(int)
+    return df_rad
 
 
 # Generiert Sakkaden
 
 def sac(df):
-    df_sac = pd.DataFrame({'Saccades': [], 'Saccade Duration': [], 'Lost Track Dauer': []})
+    df_sac = pd.DataFrame({'Saccades': [], 'Saccade Duration': []})
     # f = 0
     for i in range(len(df)):
         try:
             j = i + 1
-            d = 120
+            d = 100
             t = df.iloc[j]['Timestamp in ms'] - df.iloc[i]['Timestamp in ms']
             try:
                 if df.iloc[i]['Fixation'] == 0 and df.iloc[i]['Lost Track'] == 0:
@@ -151,6 +146,96 @@ def lost_t(df):
             pass
     return df_ltt
 
-def filter(df):
 
-    return
+def filter(df, s, e):
+    df = df[(df['Timestamp'].between(s, e) == True)].reset_index()
+    try:
+        df.drop(['level_0'], axis=1)
+    except KeyError:
+        pass
+    df['Gaze Y'] = df['Gaze Y'].fillna(0)
+    df['Gaze X'] = df['Gaze X'].fillna(0)
+    df['Gaze X'] = df['Gaze X'].astype(int)
+    df['Gaze Y'] = df['Gaze Y'].astype(int)
+    df['Lost Track'] = df['Lost Track'].notna().astype(int)
+    # Zeit in MS
+    df['Timestamp in ms'] = df['Timestamp'] * 1000
+    df['Timestamp in ms'] = df['Timestamp in ms'].astype(int)
+
+    # Generiert Geschwindigkeit
+    df_ges = ges(df)
+    df = pd.concat([df, df_ges], axis=1)
+
+    ### Filter
+    # and (df_new["dy"] > 0) == True and df_new["dx"] <= 10 == True and df_new["dx"] >= -10 == True
+    # df_new['dx'] = np.sqrt(df_new['dx'] ** 2)
+    # df_new = df_new.loc[(df_new["dx"] >= 10) & (df_new["dx"] >= -10) == True]
+    # df_new = df_new.loc[(df_new["dy"] >= 20 * df_new["dx"]) & (df_new["dy"] > 0) == False]
+    # df_new = df_new.loc[(df_new["vx"] < -10) & (df_new["vx"] > 10) == False]
+    # df_new = df_new.loc[(df_new["vy"] <= 2500) & (df_new['vx'] >= 100) == True]
+    df = df[(df["Gaze Y"] <= 1030) == True]
+    try:
+        df.drop(['level_0'], axis=1)
+    except KeyError:
+        pass
+    df['Fixation'] = fix(df)
+    df = df.loc[(df['v'] == 0) & (df['Fixation'] == 0) == False]
+    try:
+        df.drop(['level_0'], axis=1)
+    except KeyError:
+        pass
+    df
+
+    # Sakkaden
+    df_sacc = sac(df)
+    df = pd.concat([df.reset_index(), df_sacc], axis=1, )
+
+    # Lost Track Dauer
+    df_ltt = lost_t(df)
+    df = pd.concat([df, df_ltt], axis=1, )
+    df.drop(df.tail(1).index, inplace=True)
+    return df.drop(['level_0'], axis=1)
+
+
+def pipe(df, s, e):
+    """
+    df: Dataframe
+    s: Start des Videos
+    e: Ende des Videos
+    """
+
+    df = filter(df, s, e)
+
+    ### Cliplänge
+    clip = e - s
+
+    ### Anzahl Lost tracks
+    lt_count = df['Lost Track'].sum()
+
+    ### Dauer Lost Tracks
+    df_ltt = lost_t(df)
+    ltt = df_ltt['Lost Track Dauer'].sum()
+
+    ### Anzahl an Saccaden
+    df['Saccades'].value_counts(sort=False)
+    sac_count = df['Saccades'].value_counts(sort=False).filter(like='1').sum()
+
+    ### Gesamt Dauer Sakkaden
+    sacc_dur = df['Saccade Duration'].sum()
+
+    ### Anzahl Fixation
+    df_fix_count = df['Fixation'].max()
+
+    ### Dauer_Fixation
+    fix_dur = clip - (sacc_dur/1000 + ltt/1000)
+
+    df_final = pd.DataFrame({'Cliplänge in Sekunden': clip, 'Anzahl Sakkaden': [], 'Gesamt Dauer Sakkaden': [],
+                             "Anzahl Lost Tracks": [], "Dauer Lost Tracks": [], "Anzahl Fixationen": [],
+                             "Gesamt Dauer Fixationen": []})
+
+    df_final = df_final.append(
+        {'Cliplänge in Sekunden': e - s, 'Anzahl Sakkaden': sac_count, 'Gesamt Dauer Sakkaden': sacc_dur,
+         "Anzahl Lost Tracks": lt_count, "Dauer Lost Tracks": ltt, "Anzahl Fixationen": df_fix_count,
+         "Gesamt Dauer Fixationen": fix_dur}, ignore_index=True)
+
+    return df_final

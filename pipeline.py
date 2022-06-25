@@ -2,55 +2,48 @@
 Export Ziel:
     Cliplänge
     Anzahl Fixationen - Done
-    Gesamt Dauer Fixationen
+    Gesamt Dauer Fixationen Done
     Anzahl Sakkaden - Done
     Gesamt Dauer Sakkaden - Done
     Anzahl Lost Tracks - Done
     Dauer Lost Tracks - Done
 """
-
-del sys.modules['feature']
+import sys
+#del sys.modules['feature']
 import pandas as pd
 import feature as ft
+import sys
+import os
 
-df_filter = df_new[(df_new['Timestamp'].between(160,165) == True)]
 
-### Cliplänge
- cl = input('Dauer des Clips:')
+def feat():
+    directory = 'Daten/'
 
-### Anzahl Lost tracks
-df_filter['Lost Track'].sum()
+    df_final = pd.DataFrame({'Cliplänge in Sekunden': [], 'Anzahl Sakkaden': [], 'Gesamt Dauer Sakkaden': [],
+                             "Anzahl Lost Tracks": [], "Dauer Lost Tracks": [], "Anzahl Fixationen": [],
+                             "Gesamt Dauer Fixationen": []})
+    name = pd.DataFrame({'Name': []})
 
-### Dauer Lost Tracks
-df_ltt = ft.lost_t(df_filter)
-df_ltt['Lost Track Dauer'].sum()
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        # checking if it is a file
+        if os.path.isfile(f) and not filename.startswith('.'):
+            df = pd.read_csv(f, sep=",")
+            df = ft.pipe(df, 160, 165)
+            name = name.append({'Name': filename}, ignore_index=True)
+            df_final = pd.concat([df, df_final], ignore_index=True)
+            print(df_final)
 
-### Anzahl an Saccaden
-ft.sac(df_filter)
-df_sacc = ft.sac(df_filter)
-try:
-    del df_filter['Saccades']
-    del df_filter['level_0']
-except KeyError:
-    pass
-df_filter = pd.concat([df_filter.reset_index(), df_sacc], axis=1, )
-df_filter
-df_filter['Saccades'].value_counts(sort=False)
-sac_count = df_filter['Saccades'].value_counts(sort=False).filter(like='1')
-sac_count
+    df_final = pd.concat([df_final, name], axis=1)
+    print(df_final)
+    return df_final
 
-### Gesamt Dauer Sakkaden
-df_sacc = ft.sac(df_filter)
-try:
-    del df_filter['Saccades']
-    del df_filter['Saccade Duration']
-    del df_filter['level_0']
-except KeyError: pass
-df_filter = pd.concat([df_filter.reset_index(),df_sacc],axis=1,)
-df_filter['Saccade Duration'].sum()
+name = 'feature'
 
-### Anzahl Fixation
-df_filter['Fixation'].loc[(df_filter['Fixation'] != 0)].tail(1).sum()
+if os.path.exists(name + ".csv"):
+    os.remove(name + ".csv")
+    print("The file has been deleted successfully")
+else:
+    print("The file does not exist!")
 
-### Gesamt Dauer Fixation
- # Clip Länge - Gesamt Dauer Sakkaden + Gesamt Dauer Lost Tracks
+feat().to_csv('feature.csv')
