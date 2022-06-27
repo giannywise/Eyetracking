@@ -57,7 +57,7 @@ try:
                 print("      - Confidence:       ", screen_gaze.confidence)
                 print("      - Timestamps:          %s     " % (time.time() - start_time))
                 df = df.append({'Timestamp': "%s" % (time.time() - start_time), "Gaze X": "%5.3f" % (screen_gaze.x),
-                                'Gaze Y': "%5.3f" % (screen_gaze),
+                                'Gaze Y': "%5.3f" % (screen_gaze.y),
                                 "Confidence": screen_gaze.confidence}, ignore_index=True)
 
             time.sleep(1 / 60)  # We expect tracking data at 60 Hz

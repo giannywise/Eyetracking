@@ -29,7 +29,7 @@ def feat():
         # checking if it is a file
         if os.path.isfile(f) and not filename.startswith('.'):
             df = pd.read_csv(f, sep=",")
-            df = ft.pipe(df, 160, 165)
+            df = ft.pipe(df, 96, 106)
             name = name.append({'Name': filename}, ignore_index=True)
             df_final = pd.concat([df_final,df], ignore_index=True)
             print(df_final)
@@ -37,7 +37,7 @@ def feat():
 
     df_final = pd.concat([df_final, name], axis=1)
     print(df_final)
-    return df_final
+    df_final.to_csv('feature.csv')
 
 name = 'feature'
 
@@ -47,4 +47,4 @@ if os.path.exists(name + ".csv"):
 else:
     print("The file does not exist!")
 
-feat().to_csv('feature.csv')
+#feat().to_csv('feature.csv')

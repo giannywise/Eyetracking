@@ -3,7 +3,10 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from matplotlib import pyplot as plt
 import seaborn as sns
+from pipeline import feat
 
+
+feat()
 
 df = pd.read_csv('feature.csv')
 
