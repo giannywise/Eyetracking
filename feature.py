@@ -136,7 +136,7 @@ def lost_t(df):
     df_ltt = pd.DataFrame({'Lost Track Dauer': []})
     for i in range(len(df)):
         p = i - 1
-        ltt = df.iloc[i]['Timestamp in ms'] - df.iloc[p]['Timestamp in ms']
+        ltt = np.sqrt((df.iloc[i]['Timestamp in ms'] - df.iloc[p]['Timestamp in ms'])**2)
         try:
             if df.iloc[i]['Lost Track'] == 1:
                 df_ltt = df_ltt.append({'Lost Track Dauer': ltt}, ignore_index=True).astype(int)
@@ -179,7 +179,7 @@ def filter(df, s, e):
     except KeyError:
         pass
     df['Fixation'] = fix(df)
-    df = df.loc[(df['v'] == 0) & (df['Fixation'] == 0) == False]
+    #df = df.loc[(df['v'] == 0) & (df['Fixation'] == 0) == False]
     try:
         df.drop(['level_0'], axis=1)
     except KeyError:
@@ -204,7 +204,9 @@ def pipe(df, s, e):
     s: Start des Videos
     e: Ende des Videos
     """
-
+    if df['Gaze X'].max() > 1930:
+        df['Gaze X'] = df['Gaze X'] * 0.75
+        df['Gaze Y'] = df['Gaze Y'] * 0.75
     df = filter(df, s, e)
 
     ### Cliplänge
@@ -230,12 +232,12 @@ def pipe(df, s, e):
     ### Dauer_Fixation
     fix_dur = clip - (sacc_dur/1000 + ltt/1000)
 
-    df_final = pd.DataFrame({'Cliplänge in Sekunden': clip, 'Anzahl Sakkaden': [], 'Gesamt Dauer Sakkaden': [],
+    df_final = pd.DataFrame({'Szene':[],'Cliplänge in Sekunden':[], 'Anzahl Sakkaden': [], 'Gesamt Dauer Sakkaden': [],
                              "Anzahl Lost Tracks": [], "Dauer Lost Tracks": [], "Anzahl Fixationen": [],
                              "Gesamt Dauer Fixationen": []})
 
     df_final = df_final.append(
-        {'Cliplänge in Sekunden': e - s, 'Anzahl Sakkaden': sac_count, 'Gesamt Dauer Sakkaden': sacc_dur,
+        {'Szene': str(s) + ' - ' + str(e),'Cliplänge in Sekunden':clip, 'Anzahl Sakkaden': sac_count, 'Gesamt Dauer Sakkaden': sacc_dur,
          "Anzahl Lost Tracks": lt_count, "Dauer Lost Tracks": ltt, "Anzahl Fixationen": df_fix_count,
          "Gesamt Dauer Fixationen": fix_dur}, ignore_index=True)
 
