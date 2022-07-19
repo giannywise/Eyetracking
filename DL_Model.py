@@ -13,13 +13,13 @@ X = df_train[['Anzahl Sakkaden','Anzahl Fixationen','Anzahl Lost Tracks','Gesamt
 
 y = df_train['Label']
 
-clf = MLPClassifier(solver='sgd', alpha=0.10, random_state=1, max_iter=2000, learning_rate_init=0.01)
+clf = MLPClassifier(solver='sgd', alpha=0.10, random_state=1, max_iter=2000, learning_rate_init=0.01,hidden_layer_sizes= 10)
 clf.fit(X, y)
 
 print(clf.predict(df_test1))
 print(clf.predict(df_test0))
 
 ### Anwendung von Cross Validation
-clf = MLPClassifier(solver='sgd', alpha=0.10, random_state=1, max_iter=2000, learning_rate_init=0.01)
+clf = MLPClassifier(solver='sgd', alpha=0.10, random_state=1, max_iter=2000, learning_rate_init=0.01, hidden_layer_sizes= 10)
 scores = cross_val_score(clf, X, y, cv=5)
 print(scores.mean())
