@@ -7,6 +7,11 @@ import os
 
 
 def feat(s, e):
+    """
+
+    :type s: Szenen Start
+    :type e: Szenen Ende
+    """
     f_name = 'features/feature' + '_' + str(s) + '-' + str(e)
 
     if os.path.exists(f_name + ".csv"):

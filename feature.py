@@ -47,7 +47,7 @@ def fix(df):
     return df_fix
 
 
-# Generiert Geschwindigkeiten
+# Generiert Geschwindigkeiten (Experimentell)
 # dx & dy = differenz. d = Abstand, vx & vy = Geschwindigkeit in x oder y Richtung [px/s],
 # v = Betrag des Geschwindigkeitsvektor [px/s], a = Richtung
 def ges(df):
@@ -166,7 +166,7 @@ def filter(df, s, e):
     df_ges = ges(df)
     df = pd.concat([df, df_ges], axis=1)
 
-    ### Filter
+    ### Filter (Experimentell)
     # and (df_new["dy"] > 0) == True and df_new["dx"] <= 10 == True and df_new["dx"] >= -10 == True
     # df_new['dx'] = np.sqrt(df_new['dx'] ** 2)
     # df_new = df_new.loc[(df_new["dx"] >= 10) & (df_new["dx"] >= -10) == True]
