@@ -1,13 +1,3 @@
-"""
-Export Ziel:
-    Cliplänge
-    Anzahl Fixationen - Done
-    Gesamt Dauer Fixationen Done
-    Anzahl Sakkaden - Done
-    Gesamt Dauer Sakkaden - Done
-    Anzahl Lost Tracks - Done
-    Dauer Lost Tracks - Done
-"""
 import sys
 #del sys.modules['feature']
 import pandas as pd
@@ -39,6 +29,7 @@ def feat(s, e):
             df = pd.read_csv(f, sep=",")
             df = ft.pipe(df, s, e)
             name = name.append({'Name': filename}, ignore_index=True)
+            name['Name'] = name['Name'].str.rstrip('.csv')
             df_final = pd.concat([df_final,df], ignore_index=True)
             print(df_final)
             print(filename)
